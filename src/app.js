@@ -42,7 +42,7 @@ function handleCurrentStudents(response) {
 }
 
 function getStudentEmails(students, filterGrads = true) {
-    if (filterGrads === false) {
+    if (filterGrads === true) {
         students = students.filter(student => new Date(student.enrollment.program_end_date).getTime() > new Date().getTime());
     }
     return students.map(student => student.email);
