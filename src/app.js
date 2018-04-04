@@ -27,8 +27,7 @@ function handleCurrentStudents(response) {
     });
     response.on("end", function handleEnd() {
         var students = JSON.parse(body);
-        var emails = students.filter(student => new Date(student.enrollment.program_end_date).getTime() > new Date().getTime())
-                         .map(student => student.email);
+        var emails = getStudentEmails(students, process.argv[2]);
         fs.mkdir('./output', function(err) {
             if (err) {
                 if (err.code !== "EEXIST") {
@@ -39,4 +38,11 @@ function handleCurrentStudents(response) {
         });
         fs.writeFile(fileName, emails);
     });
+}
+
+function getStudentEmails(students, filterGrads = true) {
+    if (filterGrads) {
+        students = students.filter(student => new Date(student.enrollment.program_end_date).getTime() > new Date().getTime());
+    }
+    return students.map(student => student.email);
 }
