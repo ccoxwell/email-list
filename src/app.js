@@ -2,6 +2,7 @@ const https     = require("https");
 const fs        = require("fs");
 const token     = require("./token.js");
 
+const shouldFilterGrads = process.argv[2];
 getCurrentStudents(handleCurrentStudents);
 
 function getCurrentStudents(callback) {
@@ -27,7 +28,7 @@ function handleCurrentStudents(response) {
     });
     response.on("end", function handleEnd() {
         var students = JSON.parse(body);
-        var emails = getStudentEmails(students, process.argv[2]);
+        var emails = getStudentEmails(students, shouldFilterGrads);
         fs.mkdir('./output', function(err) {
             if (err) {
                 if (err.code !== "EEXIST") {
@@ -41,7 +42,7 @@ function handleCurrentStudents(response) {
 }
 
 function getStudentEmails(students, filterGrads = true) {
-    if (filterGrads) {
+    if (filterGrads === false) {
         students = students.filter(student => new Date(student.enrollment.program_end_date).getTime() > new Date().getTime());
     }
     return students.map(student => student.email);
