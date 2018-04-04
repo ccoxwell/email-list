@@ -26,10 +26,9 @@ function handleCurrentStudents(response) {
         body += response;
     });
     response.on("end", function handleEnd() {
-        body = JSON.parse(body);
-        var emails = body.map(function(student) {
-            return student.email;
-        });
+        var students = JSON.parse(body);
+        var emails = students.filter(student => new Date(student.enrollment.program_end_date).getTime() > new Date().getTime())
+                         .map(student => student.email);
         fs.mkdir('./output', function(err) {
             if (err) {
                 if (err.code !== "EEXIST") {
@@ -41,4 +40,3 @@ function handleCurrentStudents(response) {
         fs.writeFile(fileName, emails);
     });
 }
-
